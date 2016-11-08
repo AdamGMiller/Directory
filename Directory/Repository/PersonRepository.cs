@@ -13,7 +13,7 @@ namespace Directory.Repository
         {
         }
 
-        public IEnumerable<Person> GetAll(string search)
+        public IEnumerable<Person> GetAll(int page, int pageSize, string search)
         {
             // pull all active people
             IQueryable<Person> people = db.People
@@ -25,7 +25,7 @@ namespace Directory.Repository
                 string[] names = search.Split(new Char[] { ',', ' ' },
                                  StringSplitOptions.RemoveEmptyEntries);
 
-                if (names.Length > 0)
+                if (names.Length > 1)
                 {
                     string firstName = "";
                     string lastName = "";
@@ -41,7 +41,7 @@ namespace Directory.Repository
                         firstName = names.First();
                         lastName = names.Last();
                     }
-                    people = people.Where(q => q.FirstName.StartsWith(firstName) ||
+                    people = people.Where(q => q.FirstName.StartsWith(firstName) &&
                                                q.LastName.StartsWith(lastName));
                 }
                 else
@@ -51,6 +51,12 @@ namespace Directory.Repository
                                                q.LastName.Contains(search));
                 }
             }
+
+            // limit results, sorting by first and last name
+            people = people
+                .OrderBy(q => new { q.FirstName, q.LastName})
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize);
 
             return people;
         }

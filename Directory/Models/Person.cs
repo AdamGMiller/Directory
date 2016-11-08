@@ -20,6 +20,7 @@ namespace Directory.Repository
         public bool ActiveFlag { get; set; }
         public DateTime Dob { get; set; }
         public string Interests { get; set; }
+        public byte[] Photo { get; set; }
         [Timestamp]
         public Byte[] ConcurrencyToken { get; set; }
     }

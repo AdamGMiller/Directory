@@ -188,7 +188,7 @@
   <ItemGroup>
     <Content Include="app.css" />
     <Content Include="app.js" />
-    <Content Include="default.html" />
+    <Content Include="default.htm" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\MaterialIcons-Regular.svg" />
     <Content Include="Global.asax" />

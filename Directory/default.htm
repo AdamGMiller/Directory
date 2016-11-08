@@ -18,6 +18,7 @@
     <script src="/scripts/angular/angular.min.js"></script>
     <script src="/scripts/angular/angular-animate.min.js"></script>
     <script src="/scripts/angular/angular-aria.min.js"></script>
+    <script src="/scripts/angular/angular-route.min.js"></script>
 
     <!-- Angular Material Library -->
     <script src="/scripts/angular/angular-material.min.js"></script>
@@ -89,7 +90,9 @@
                                 </md-card-title-text>
                             </md-card-title>
                             <md-card-content>
-
+                                <img ng-src="data:image/JPEG;base64,{{person.Photo}}">
+                                {{person.Interests}}
+                            </md-card-content>
                             <md-card-actions layout="row" layout-align="center center">
                                 <md-button class="md-icon-button" ng-click="showUpdate($event, $scope, posting)" aria-label="edit">
                                     <md-icon md-font-library="material-icons" class="md-24">mode_edit</md-icon>

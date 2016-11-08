@@ -13,6 +13,9 @@ namespace Directory
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+            // allow for static default page
+            routes.IgnoreRoute("");
+
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",

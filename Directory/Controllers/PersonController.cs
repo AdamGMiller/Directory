@@ -17,9 +17,9 @@ namespace Directory.Controllers
 
         // GET: api/Person/
         [HttpGet]
-        public IHttpActionResult Index(string search = null)
+        public IHttpActionResult Index(int page = 1, int pageSize = 10, string search = null)
         {
-            return Ok(repo.GetAll(search));
+            return Ok(repo.GetAll(page, pageSize, search));
         }
 
         // GET: api/Person/5
