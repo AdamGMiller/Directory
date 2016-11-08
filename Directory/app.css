@@ -1,0 +1,126 @@
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(/fonts/MaterialIcons-Regular.eot); /* For IE6-8 */
+  src: local('Material Icons'),
+       local('MaterialIcons-Regular'),
+       url(/fonts/MaterialIcons-Regular.woff2) format('woff2'),
+       url(/fonts/MaterialIcons-Regular.woff) format('woff'),
+       url(/fonts/MaterialIcons-Regular.ttf) format('truetype');
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Preferred icon size */
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+
+
+@media screen and (min-width: 980px) /* Desktop */ {
+    .postingCard
+    {  
+          min-width: 550px;
+    }
+    .postingCard iframe {
+      width: 100%;
+      min-height: 350px;
+      height: auto;
+    }
+}
+
+@media screen  and (max-width: 979px) /* Tablet */ {
+    .postingCard
+    {  
+          min-width: 500px;
+    }
+    .postingCard iframe {
+      width: 100%;
+      min-height: 250px;
+      height: auto;
+    }
+}
+
+@media screen and (max-width: 500px) /* Mobile */ {
+    .postingCard
+    {  
+          min-width: 300px;
+          width:100%;
+    }
+    .postingCard iframe {
+      width: 100%;
+      min-height: 200px;
+      height: auto;
+    }
+}
+
+.postingCard.image {
+    max-width: 100% !important;
+}
+
+.postingCard
+{  
+    max-width:550px;
+}
+
+
+.loadMoreButton {
+    width:100%;
+    height:100%;
+}
+
+.loadMoreCard {
+    width:100%;
+}
+
+.progress .container {
+  display: block;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  border: 2px solid #aad1f9;
+  transition: opacity  0.1s linear;
+  border-top: 0px; }
+.progress .bottom-block {
+  display: block;
+  position: relative;
+  background-color: rgba(255, 235, 169, 0.25);
+  height: 85px;
+  width: 100%; }
+.progress .bottom-block > span {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 25px;
+  font-size: 0.9em; }
+
+md-dialog.fullscreen-dialog {
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    opacity:0.5;
+}
+
+.searchBox {
+    margin-top: 23px;
+    margin-bottom: 0px;
+}

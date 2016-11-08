@@ -15,8 +15,11 @@ namespace Directory.Repository
 
         public IEnumerable<Person> GetAll(string search)
         {
-            IQueryable<Person> people = db.People;
+            // pull all active people
+            IQueryable<Person> people = db.People
+                .Where(q => q.ActiveFlag == true);
 
+            // perform "smart" name search if space or comma present
             if (String.IsNullOrEmpty(search) == false)
             {
                 string[] names = search.Split(new Char[] { ',', ' ' },
@@ -41,7 +44,6 @@ namespace Directory.Repository
                     people = people.Where(q => q.FirstName.StartsWith(firstName) ||
                                                q.LastName.StartsWith(lastName));
                 }
-
                 else
                 {
                     // simple one-word search

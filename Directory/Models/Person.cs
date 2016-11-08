@@ -18,6 +18,8 @@ namespace Directory.Repository
         public string LastName { get; set; }
         [Required]
         public bool ActiveFlag { get; set; }
+        public DateTime Dob { get; set; }
+        public string Interests { get; set; }
         [Timestamp]
         public Byte[] ConcurrencyToken { get; set; }
     }
