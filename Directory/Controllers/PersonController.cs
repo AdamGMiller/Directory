@@ -15,12 +15,26 @@ namespace Directory.Controllers
             this.repo = person;
         }
 
-        // GET: Person
+        // GET: api/Person/
         [HttpGet]
-        public IHttpActionResult Index()
+        public IHttpActionResult Index(string search = null)
         {
-            return Ok(repo.GetAll());
+            return Ok(repo.GetAll(search));
         }
-        
+
+        // GET: api/Person/5
+        [HttpGet]
+        public IHttpActionResult GetPerson(int id)
+        {
+            if(repo.Exists(id) == false)
+            {
+                return BadRequest("Id not found");
+            }
+
+            Person person = repo.Get(id);
+
+            return Ok(person);
+        }
+
     }
 }

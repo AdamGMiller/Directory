@@ -10,10 +10,14 @@ namespace Directory.Repository
     {
         [Key]
         public int Id { get; set; }
+        [Required]
         [StringLength(100)]
         public string FirstName { get; set; }
+        [Required]
         [StringLength(100)]
         public string LastName { get; set; }
+        [Required]
+        public bool ActiveFlag { get; set; }
         [Timestamp]
         public Byte[] ConcurrencyToken { get; set; }
     }

@@ -1,63 +1,108 @@
-﻿using System;
+﻿using Directory.Context;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace Directory.Repository
 {
     public class PersonRepository : IPersonRepository
     {
-        private List<Person> people = new List<Person>();
+        private DirectoryContext db = new DirectoryContext();
 
         public PersonRepository()
         {
-            // Add products for the Demonstration  
-            Add(new Person { FirstName = "Adam", LastName = "Miller" });
-            Add(new Person { FirstName = "Bob", LastName = "Smith" });
         }
 
-        public IEnumerable<Person> GetAll()
+        public IEnumerable<Person> GetAll(string search)
         {
-            // TO DO : Code to get the list of all the records in database  
+            IQueryable<Person> people = db.People;
+
+            if (String.IsNullOrEmpty(search) == false)
+            {
+                string[] names = search.Split(new Char[] { ',', ' ' },
+                                 StringSplitOptions.RemoveEmptyEntries);
+
+                if (names.Length > 0)
+                {
+                    string firstName = "";
+                    string lastName = "";
+                    // if comma present, use lastname, firstname format
+                    if (search.Contains(','))
+                    {
+                        firstName = names.Last();
+                        lastName = names.First();
+                    }
+                    else
+                    // if no comma, use firstname lastname format
+                    {
+                        firstName = names.First();
+                        lastName = names.Last();
+                    }
+                    people = people.Where(q => q.FirstName.StartsWith(firstName) ||
+                                               q.LastName.StartsWith(lastName));
+                }
+
+                else
+                {
+                    // simple one-word search
+                    people = people.Where(q => q.FirstName.Contains(search) ||
+                                               q.LastName.Contains(search));
+                }
+            }
+
             return people;
         }
         public Person Get(int id)
         {
-            // TO DO : Code to find a record in database  
-            return people.Find(p => p.Id == id);
-        }
-        public Person Add(Person item)
-        {
-            if (item == null)
+            if (Exists(id) == false)
             {
-                throw new ArgumentNullException("item");
+                throw new Exception("Person Id cannot be found.");
             }
 
-            people.Add(item);
-            return item;
+            return db.People.Single(p => p.Id == id);
         }
-        public bool Update(Person item)
+        public void Add(Person person)
         {
-            if (item == null)
+            if (person == null)
             {
-                throw new ArgumentNullException("item");
+                throw new ArgumentNullException("No person data to add.");
             }
 
-            // TO DO : Code to update record into database  
-            int index = people.FindIndex(p => p.Id == item.Id);
-            if (index == -1)
-            {
-                return false;
-            }
-            people.RemoveAt(index);
-            people.Add(item);
-            return true;
+            db.People.Add(person);
+            db.SaveChanges();
         }
-        public bool Delete(int id)
+        public void Update(int id, Person person)
         {
-            // TO DO : Code to remove the records from database  
-            people.RemoveAll(p => p.Id == id);
-            return true;
+            if (person == null)
+            {
+                throw new ArgumentNullException("No person data to update.");
+            }
+
+            if (Exists(id) == false)
+            {
+                throw new Exception("Person Id cannot be found.");
+            }
+
+            Person currentPerson = db.People.Single(q => q.Id == id);
+            currentPerson.FirstName = person.FirstName;
+            currentPerson.LastName = person.LastName;
+
+            db.SaveChanges();
+        }
+
+        // Mark record as inactive
+        // This is generally preferred for data integrity and data loss mitigation
+        public void Delete(int id)
+        {
+            Person person = db.People.Single(q => q.Id == id);
+            person.ActiveFlag = false;
+
+            db.SaveChanges();
+        }
+
+        public bool Exists(int id)
+        {
+            return db.People.Count(e => e.Id == id) > 0;
         }
     }
 }

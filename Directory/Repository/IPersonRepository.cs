@@ -7,10 +7,11 @@ namespace Directory.Repository
 {
     public interface IPersonRepository
     {
-        IEnumerable<Person> GetAll();
+        IEnumerable<Person> GetAll(string search);
         Person Get(int id);
-        Person Add(Person item);
-        bool Update(Person item);
-        bool Delete(int id);
+        void Add(Person person);
+        void Update(int id, Person person);
+        void Delete(int id);
+        bool Exists(int id);
     }
 }
