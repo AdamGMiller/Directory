@@ -18,6 +18,9 @@ namespace Directory
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            //register the unity container
+            //Bootstrapper.Initialise();
         }
     }
 }
