@@ -15,12 +15,13 @@ namespace Directory.Tests.Controllers
     [TestClass]
     public class PersonControllerTest
     {
-        public readonly IPersonRepository MockPersonRepository;
+        private IList<Person> people;
 
-        public PersonControllerTest()
+        [TestInitialize]
+        public void Setup()
         {
-            // create some mock products to play with
-            IList<Person> people = new List<Person>
+            // generate list of test data
+            people = new List<Person>
                 {
                     new Person() { Id = 1, FirstName = "Adam", LastName = "Tucker", Interests = "Volunteer, Geek, Database Wrangler, Green building lover, Tape therapist. I'm real, I hope my followers are too.", Dob = DateTime.Parse("11/16/1950"), ActiveFlag = true },
                     new Person() { Id = 2, FirstName = "Alan", LastName = "Riley", Interests = "Misanthrope, Musician, Avid Gamer, Saviour of Mankind, Like Neo from 'The Matrix', but less terrible.. Thank you hand sanitizer for letting me know that I have a cut in my hand.", Dob = DateTime.Parse("01/20/1956"), ActiveFlag = true },
@@ -36,31 +37,42 @@ namespace Directory.Tests.Controllers
                     new Person() { Id = 12, FirstName = "Brandon", LastName = "Morgan", Interests = "Gambler, Fan, Data Visualizer, Trends Addict, Twitteratti. I used to think that you could just go to the bank and ask for money.", Dob = DateTime.Parse("06/20/1973"), ActiveFlag = true },
                     new Person() { Id = 13, FirstName = "Carl", LastName = "Graham", Interests = "Disrupter, Geek, Fire Spinner, Chihuahua Lover, Mayonaise Tester. My life is the first half of a Spider Man movie.", Dob = DateTime.Parse("12/07/1970"), ActiveFlag = true }
                 };
-
-            // Mock the Products Repository using Moq
-            Mock<IPersonRepository> mockPersonRepository = new Mock<IPersonRepository>();
-
-            // Return the first page of people
-            int page = 1;
-            int pageSize = 10;
-            mockPersonRepository.Setup(mr => mr.GetAll(page, pageSize, "")).Returns(people.OrderBy(q => q.FirstName).Take(pageSize));
-
-            // return a person by Id
-            mockPersonRepository.Setup(mr => mr.Get(It.IsAny<int>())).Returns((int i) => people.Where(x => x.Id == i).Single());
-
-            // Complete the setup of our Mock Product Repository
-            this.MockPersonRepository = mockPersonRepository.Object;
         }
 
         [TestMethod]
-        public void CanReturnProductById()
+        public void Person_ShouldFind_ValidInstance()
         {
-            // Try finding a product by id
-            Person testPerson = this.MockPersonRepository.Get(2);
+            //Arrange
+            var repositoryMock = new Mock<IPersonRepository>();
+            repositoryMock.Setup(x => x.GetAll(It.IsAny<int>(), It.IsAny<int>(), null)).Returns(people);
+            // return a person by Id
+            repositoryMock.Setup(x => x.Get(It.IsAny<int>())).Returns((int i) => people.Where(x => x.Id == i).Single());
+            var personRepository = repositoryMock.Object;
 
-            Assert.IsNotNull(testPerson); // Test if null
-            Assert.IsInstanceOfType(testPerson, typeof(Person)); // Test type
-            Assert.AreEqual("Alan", testPerson.FirstName); // Verify it is the right product
+            //Act
+            var singlePerson = personRepository.Get(2);
+
+            //Assert
+            Assert.IsNotNull(singlePerson); // Test if null
+            Assert.IsInstanceOfType(singlePerson, typeof(Person)); // Test type
+            Assert.AreEqual("Alan", singlePerson.FirstName); // Verify the name matches
+        }
+
+        [TestMethod]
+        public void Person_ShouldFind_ActiveOnly()
+        {
+            //Arrange
+            var repositoryMock = new Mock<IPersonRepository>();
+            //Setup mock that will return People list when called:
+            repositoryMock.Setup(x => x.GetAll(It.IsAny<int>(), It.IsAny<int>(), null))
+                .Returns(people.Where(q => q.ActiveFlag == true));
+            var personRepository = repositoryMock.Object;
+
+            //Act
+            var peopleResults = personRepository.GetAll(1, 20, null);
+
+            //Assert
+            Assert.AreEqual(12, peopleResults.Count()); // Verify the count
         }
     }
 }
