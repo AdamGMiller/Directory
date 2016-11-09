@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Directory.Repository
 {
@@ -18,10 +19,28 @@ namespace Directory.Repository
         public string LastName { get; set; }
         [Required]
         public bool ActiveFlag { get; set; }
-        public DateTime Dob { get; set; }
+        public DateTime? Dob { get; set; }
         public string Interests { get; set; }
         public byte[] Photo { get; set; }
         [Timestamp]
         public Byte[] ConcurrencyToken { get; set; }
+
+        [NotMapped]
+        public int? Age
+        {
+            get
+            {
+                //Check if DOB has a value since it is a nullable DateTime
+                if (Dob.HasValue)
+                {
+                    DateTime today = DateTime.Today;
+                    int age = today.Year - Dob.Value.Year;  //Here DOB is the property that stores Date of Birth
+                    if (Dob > today.AddYears(-age))
+                        age--;
+                    return age;
+                }
+                return null;
+            }
+        }
     }
 }

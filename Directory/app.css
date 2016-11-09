@@ -72,13 +72,15 @@
     }
 }
 
-.postingCard.image {
-    max-width: 100% !important;
+
+.personPhoto
+{  
+    margin: 5px;
 }
 
-.postingCard
-{  
-    max-width:550px;
+.personCard
+{
+    width: 500px;
 }
 
 

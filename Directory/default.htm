@@ -82,15 +82,18 @@
 
             <div class="md-padding" md-scroll-y layout-xs="column" layout="row" layout-wrap>
                 <div ng-repeat="person in people" ng-cloak ng-model="html">
-                    <div flex="50">
-                        <md-card class="postingCard" md-theme="{{ showDarkTheme ? 'dark-grey' : 'default' }}" md-theme-watch>
+                    <div flex-gt-sm="nogrow" flex="100">
+                        <md-card class="personCard" md-theme="{{ showDarkTheme ? 'dark-grey' : 'default' }}" md-theme-watch>
                             <md-card-title>
                                 <md-card-title-text>
                                     <span class="md-headline">{{person.FirstName}} {{person.LastName}}</span>
+                                    <span class="md-subhead">Age {{person.Age}}</span>
                                 </md-card-title-text>
+                                <md-card-title-media>
+                                    <div class="md-media-lg card-media personPhoto"><img ng-src="data:image/JPEG;base64,{{person.Photo}}"></div>
+                                </md-card-title-media>
                             </md-card-title>
                             <md-card-content>
-                                <img ng-src="data:image/JPEG;base64,{{person.Photo}}">
                                 {{person.Interests}}
                             </md-card-content>
                             <md-card-actions layout="row" layout-align="center center">
@@ -118,6 +121,7 @@
                         </md-card>
                     </div>
                 </div>
+
                 <div flex="100" layout="row" layout-align="center center" ng-hide="isLoading">
                     <md-card class="loadMoreCard" md-theme="{{ showDarkTheme ? 'dark-grey' : 'default' }}" md-theme-watch>
                         <md-button class="loadMoreButton" ng-click="loadMore($event)">Load More</md-button>
