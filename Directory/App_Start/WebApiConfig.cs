@@ -1,4 +1,5 @@
-﻿using Directory.Repository;
+﻿using Directory.Filters;
+using Directory.Repository;
 using Microsoft.Practices.Unity;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,9 @@ namespace Directory
             var container = new UnityContainer();
             container.RegisterType<IPersonRepository, PersonRepository>(new HierarchicalLifetimeManager());
             config.DependencyResolver = new UnityResolver(container);
+
+            // validate models using custom filter
+            config.Filters.Add(new ValidateModelAttribute());
 
             // Web API routes
             config.MapHttpAttributeRoutes();

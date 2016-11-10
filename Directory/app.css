@@ -35,44 +35,6 @@
 }
 
 
-@media screen and (min-width: 980px) /* Desktop */ {
-    .postingCard
-    {  
-          min-width: 550px;
-    }
-    .postingCard iframe {
-      width: 100%;
-      min-height: 350px;
-      height: auto;
-    }
-}
-
-@media screen  and (max-width: 979px) /* Tablet */ {
-    .postingCard
-    {  
-          min-width: 500px;
-    }
-    .postingCard iframe {
-      width: 100%;
-      min-height: 250px;
-      height: auto;
-    }
-}
-
-@media screen and (max-width: 500px) /* Mobile */ {
-    .postingCard
-    {  
-          min-width: 300px;
-          width:100%;
-    }
-    .postingCard iframe {
-      width: 100%;
-      min-height: 200px;
-      height: auto;
-    }
-}
-
-
 .personPhoto
 {  
     margin: 5px;
@@ -82,7 +44,6 @@
 {
     width: 500px;
 }
-
 
 .loadMoreButton {
     width:100%;
@@ -126,3 +87,4 @@ md-dialog.fullscreen-dialog {
     margin-top: 23px;
     margin-bottom: 0px;
 }
+

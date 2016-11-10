@@ -91,9 +91,16 @@ namespace Directory.Repository
                 throw new Exception("Person Id cannot be found.");
             }
 
-            Person currentPerson = db.People.Single(q => q.Id == id);
+            if (id != person.Id)
+            {
+                throw new Exception("Url Id doesn't match object Id.");
+            }
+
+            Person currentPerson = db.People.Single(q => q.Id == person.Id);
             currentPerson.FirstName = person.FirstName;
             currentPerson.LastName = person.LastName;
+            currentPerson.Dob = person.Dob;
+            currentPerson.Interests = person.Interests;
 
             db.SaveChanges();
         }

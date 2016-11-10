@@ -30,11 +30,11 @@ namespace Directory.Repository
         {
             get
             {
-                //Check if DOB has a value since it is a nullable DateTime
+                // calculate if date of birth is valid
                 if (Dob.HasValue)
                 {
                     DateTime today = DateTime.Today;
-                    int age = today.Year - Dob.Value.Year;  //Here DOB is the property that stores Date of Birth
+                    int age = today.Year - Dob.Value.Year; 
                     if (Dob > today.AddYears(-age))
                         age--;
                     return age;

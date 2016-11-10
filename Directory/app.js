@@ -1,4 +1,4 @@
-var app = angular.module('app', ['ngMaterial', 'ngRoute', 'ngFileUpload']);
+var app = angular.module('app', ['ngMaterial', 'ngMessages', 'ngRoute', 'ngFileUpload']);
 
 /* Process REST requests */
 app.factory('personFactory', ['$http', function ($http) {
@@ -7,7 +7,8 @@ app.factory('personFactory', ['$http', function ($http) {
     var person = {
         Id: 0,
         FirstName: "",
-        LastName: " "
+        LastName: "",
+        Dob: new Date()
     };
 
     person.load = function (page, search) {
@@ -86,10 +87,10 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
         /* Methods */
         function getPeople() {
             $scope.isLoading = true;
-			console.log('Getting people');
+            console.log('Getting people');
             personFactory.load($scope.page, $scope.search)
                 .then(function (response) {
-					console.log('Getting people - response');
+                    console.log('Getting people - response');
                     if ($scope.page > 1) {
                         $scope.people = $scope.people.concat(response.data);
                     } else {
@@ -121,6 +122,11 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
         }
 
         $scope.insertPerson = function (person) {
+            // set the active flag
+            person.ActiveFlag = true;
+            person.Age = $scope.calcuateAge(person.Dob);
+            person.Photo = "R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
+
             personFactory.insert(person)
                 .then(function (response) {
                     // update ID in case there's a desire to delete or edit
@@ -133,6 +139,8 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
         };
 
         $scope.updatePerson = function (person) {
+            person.Age = $scope.calcuateAge(person.Dob);
+
             personFactory.update(person)
                 .then(function (response) {
                     console.log('Updated person, refreshing');
@@ -170,6 +178,16 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
                 var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
                 console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
             });
+        };
+
+        $scope.calcuateAge = function (dob) {
+            // calculate age for display purposes
+            var d = new Date();
+            var n = d.getTime();
+            var c = Date.parse(dob);
+            var a = (d - c) / (1000 * 60 * 60 * 24 * 365);
+            var result = Math.round(a * 100) / 100;
+            return Math.floor(result);
         };
 
 
@@ -218,15 +236,16 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
         };
 
 
-        $scope.showUpdate = function (ev, scope, posting) {
+        $scope.showUpdate = function (ev, scope, person) {
             var useFullScreen = ($mdMedia('sm') || $mdMedia('xs')) && $scope.customFullscreen;
+
             $mdDialog.show({
-                controller: DialogController,
+                controller: PersonDialogController,
                 templateUrl: '/pages/PersonDialog.tmpl.html',
                 parent: angular.element(document.body),
                 targetEvent: ev,
                 // pass person data
-                locals: { person: person},
+                locals: { person: person },
                 clickOutsideToClose: false,
                 fullscreen: useFullScreen
             })
@@ -245,6 +264,10 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
 
         function PersonDialogController($scope, $mdDialog, person) {
             $scope.person = person;
+            // create the dob variable in order to convert an ISO date to a true date
+            if (person.Dob) {
+                $scope.dob = new Date(person.Dob);
+            }
             $scope.hide = function () {
                 $mdDialog.hide();
             };
@@ -291,7 +314,7 @@ app.config(function ($mdThemingProvider, $mdIconProvider) {
           .dark();
 });
 
-/* This will load more posts at the bottom of the page */
+/* This will load more people at the bottom of the page */
 app.directive('scrollCheck', function () {
     return {
         restrict: 'A',

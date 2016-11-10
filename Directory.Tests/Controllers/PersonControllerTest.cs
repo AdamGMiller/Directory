@@ -9,6 +9,8 @@ using Directory;
 using Directory.Controllers;
 using Moq;
 using Directory.Repository;
+using System.Web.Http.Results;
+using System.Web.Http.Hosting;
 
 namespace Directory.Tests.Controllers
 {
@@ -40,17 +42,15 @@ namespace Directory.Tests.Controllers
         }
 
         [TestMethod]
-        public void Person_ShouldFind_ValidInstance()
+        public void GetValidRepositoryEntryReturnsPerson()
         {
             //Arrange
-            var repositoryMock = new Mock<IPersonRepository>();
-            repositoryMock.Setup(x => x.GetAll(It.IsAny<int>(), It.IsAny<int>(), null)).Returns(people);
-            // return a person by Id
-            repositoryMock.Setup(x => x.Get(It.IsAny<int>())).Returns((int i) => people.Where(x => x.Id == i).Single());
-            var personRepository = repositoryMock.Object;
+            var mockRepository = new Mock<IPersonRepository>();
+            mockRepository.Setup(x => x.Get(It.IsAny<int>())).Returns((int i) => people.Where(x => x.Id == i).Single());
+            var repository = mockRepository.Object;
 
             //Act
-            var singlePerson = personRepository.Get(2);
+            var singlePerson = repository.Get(2);
 
             //Assert
             Assert.IsNotNull(singlePerson); // Test if null
@@ -59,20 +59,92 @@ namespace Directory.Tests.Controllers
         }
 
         [TestMethod]
-        public void Person_ShouldFind_ActiveOnly()
+        public void GetAllByNameReturnsValidResults()
         {
             //Arrange
-            var repositoryMock = new Mock<IPersonRepository>();
-            //Setup mock that will return People list when called:
-            repositoryMock.Setup(x => x.GetAll(It.IsAny<int>(), It.IsAny<int>(), null))
-                .Returns(people.Where(q => q.ActiveFlag == true));
-            var personRepository = repositoryMock.Object;
+            var mockRepository = new Mock<IPersonRepository>();
+            mockRepository.Setup(x => x.GetAll(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
+                .Returns(people.Where(q => q.FirstName.Contains("Brandon")));
+            var repository = mockRepository.Object;
 
             //Act
-            var peopleResults = personRepository.GetAll(1, 20, null);
+            var multiplePeople = repository.GetAll(1, 10, "Brandon");
 
             //Assert
-            Assert.AreEqual(12, peopleResults.Count()); // Verify the count
+            Assert.IsNotNull(multiplePeople); // Test if null
+            Assert.AreEqual(2, multiplePeople.Count()); // check count
+        }
+
+        [TestMethod]
+        public void GetValidItemFromControllerReturnsPerson()
+        {
+            // Arrange
+            var mockRepository = new Mock<IPersonRepository>();
+            mockRepository.Setup(x => x.Get(2))
+                .Returns(people.Single(q => q.Id == 2));
+            mockRepository.Setup(x => x.Exists(2))
+                .Returns(true);
+            var controller = new PersonController(mockRepository.Object);
+
+            // Act
+            var actionResult = controller.Get(2);
+
+            // Assert
+            var response = actionResult as OkNegotiatedContentResult<Person>;
+            Assert.IsNotNull(response);
+            Assert.AreEqual(2, response.Content.Id);
+        }
+
+        [TestMethod]
+        public void GetInvalidItemFromControllerReturnsNotFound()
+        {
+            // Arrange
+            var mockRepository = new Mock<IPersonRepository>();
+            mockRepository.Setup(x => x.Exists(2))
+                .Returns(false);
+            var controller = new PersonController(mockRepository.Object);
+
+            // Act
+            var actionResult = controller.Get(2);
+
+            // Assert
+            Assert.IsInstanceOfType(actionResult, typeof(NotFoundResult));
+        }
+
+        [TestMethod]
+        public void GetActiveItemsFromControllerReturnsPeople()
+        {
+            // Arrange
+            var mockRepository = new Mock<IPersonRepository>();
+            mockRepository.Setup(x => x.GetAll(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
+                .Returns(people.Where(q => q.ActiveFlag == true));
+            var controller = new PersonController(mockRepository.Object);
+
+            // Act
+            var actionResult = controller.GetAll(1, 20, "");
+
+            // Assert
+            var response = actionResult as OkNegotiatedContentResult<IEnumerable<Person>>;
+            Assert.IsNotNull(response);
+            Assert.AreEqual(12, response.Content.Count());
+        }
+
+        [TestMethod]
+        public void GetSinglePageFromControllerReturnsPartialResults()
+        {
+            // Arrange
+            var mockRepository = new Mock<IPersonRepository>();
+            mockRepository.Setup(x => x.GetAll(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
+                .Returns(people.Where(q => q.ActiveFlag == true).OrderBy(q => q.FirstName).Take(10));
+            var controller = new PersonController(mockRepository.Object);
+
+            // Act
+            var actionResult = controller.GetAll(1, 10, "");
+
+            // Assert
+            var response = actionResult as OkNegotiatedContentResult<IEnumerable<Person>>;
+            Assert.IsNotNull(response);
+            Assert.AreEqual(10, response.Content.Count());
         }
     }
 }
