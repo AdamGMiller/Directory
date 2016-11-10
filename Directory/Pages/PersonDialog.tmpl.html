@@ -1,5 +1,5 @@
 ﻿<md-dialog aria-label="Person Dialog {{person.Id}}">
-    <form name="personForm" ng-cloak novalidate ng-submit="personForm.$valid &&  savePerson()">
+    <form name="personForm" ng-cloak novalidate ng-submit="answer(person)">
         <md-toolbar>
             <div class="md-toolbar-tools">
                 <h2>Edit Person</h2>
@@ -15,17 +15,20 @@
                 <md-input-container>
                     <label>First Name:</label>
                     <input required id="firstName" aria-label="FirstName" ng-model="person.FirstName" size="25" maxlength="100">
-                    <div ng-messages="personForm.clientName.$error">
+                    <div ng-messages="personForm.firstName.$error">
                         <div ng-message="required">This is required.</div>
                     </div>
                 </md-input-container>
                 <md-input-container>
                     <label>Last Name:</label>
-                    <input aria-label="LastName" ng-model="person.LastName" size="25" maxlength="100">
+                    <input required aria-label="LastName" ng-model="person.LastName" size="25" maxlength="100">
+                    <div ng-messages="personForm.firstName.$error">
+                        <div ng-message="required">This is required.</div>
+                    </div>
                 </md-input-container>
             </div>
             <div layout-gt-sm="row" layout-padding>
-                <md-datepicker ng-model="dob" name="dateOfBirth"
+                <md-datepicker required ng-model="dob" id="dateOfBirth"
                                ng-change="person.Dob = dob.toISOString()"
                                md-placeholder="Date of birth"></md-datepicker>
                 <div ng-messages="personForm.dateOfBirth.$error">
@@ -36,13 +39,13 @@
             <div layout-padding>
                 <md-input-container class="md-block">
                     <label>Interests</label>
-                    <textarea ng-model="person.Interests" md-maxlength="150" rows="5" md-select-on-focus></textarea>
+                    <textarea ng-model="person.Interests" md-maxlength="150" rows="5"></textarea>
                 </md-input-container>
             </div>
         </md-dialog-content>
 
         <md-dialog-actions layout="row">
-            <md-button type="submit" id="savePerson" class="md-primary md-raised md-button" ng-click="answer(person)" aria-label="Save">
+            <md-button type="submit" id="savePerson" class="md-primary md-raised md-button" ng-disabled="personForm.$invalid" aria-label="Save">
                 Save
             </md-button>
             <span flex="10"></span>
