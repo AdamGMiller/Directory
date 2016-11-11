@@ -125,7 +125,7 @@
                     </div>
                 </div>
 
-                <div flex="100" layout="row" layout-align="center center" ng-hide="isLoading">
+                <div flex="100" layout="row" layout-align="center center" ng-hide="isLoading  || peopleFound !== pageSize">
                     <md-card class="loadMoreCard" md-theme="{{ showDarkTheme ? 'dark-grey' : 'default' }}" md-theme-watch>
                         <md-button class="loadMoreButton" ng-click="loadMore($event)">Load More</md-button>
                     </md-card>

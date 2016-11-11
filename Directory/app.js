@@ -11,9 +11,9 @@ app.factory('personFactory', ['$http', function ($http) {
         Dob: new Date()
     };
 
-    person.load = function (page, search) {
-        var url = urlBase + '/?page=' + page;
-        if (search !== "" && !angular.isUndefined(search)) {
+    person.load = function (page, pageSize, search) {
+        var url = urlBase + '/?page=' + page + '&pageSize=' + pageSize;
+        if (search !== null && search !== "" && !angular.isUndefined(search)) {
             url = url + '&search=' + search;
         }
         return $http.get(url);
@@ -69,6 +69,7 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
 
         /* Set scope variables */
         $scope.page = 1;
+        $scope.pageSize = 12;
         $scope.people;
         $scope.isLoading = true;
 
@@ -87,8 +88,8 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
         /* Methods */
         function getPeople() {
             $scope.isLoading = true;
-            console.log('Getting people');
-            personFactory.load($scope.page, $scope.search)
+            console.log('Getting people - page ' + $scope.page + ' ' + ' and search ' + $scope.search);
+            personFactory.load($scope.page, $scope.pageSize, $scope.search)
                 .then(function (response) {
                     if ($scope.page > 1) {
                         $scope.people = $scope.people.concat(response.data);
@@ -96,6 +97,8 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
                         $scope.people = response.data;
                     }
                     $scope.isLoading = false;
+                    $scope.peopleFound = response.data.length;
+                    console.log("Found " + $scope.peopleFound + " people")
                 }, function (error) {
                     console.log('Unable to load person data: ' + error.message);
                     $scope.isLoading = false;
@@ -118,6 +121,7 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
 
         $scope.searchPeople = function (ev) {
             $scope.page = 1;
+            $scope.moreResults = true;
             getPeople($scope.page);
         }
 
@@ -356,7 +360,8 @@ app.directive('scrollCheck', function () {
                 var elm = element[0];
                 var check = function () {
                     if (elm.offsetHeight + elm.scrollTop >= elm.scrollHeight) {
-                        if (!scope.isLoading) {
+                        // load more results if not currently loading or there are possibly more results
+                        if (!scope.isLoading && scope.pageSize == scope.peopleFound) {
                             scope.loadMore();
                         }
                     }
