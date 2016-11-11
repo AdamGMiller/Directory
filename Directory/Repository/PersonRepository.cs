@@ -16,6 +16,7 @@ namespace Directory.Repository
 
         public IEnumerable<Person> GetAll(int page, int pageSize, string search)
         {
+            // OCCASIONALLY FORCE A DELAY IN RESPONSE
             // FOR DEMO PURPOSES ONLY!
             Random r = new Random();
             int random = r.Next(0, 10);

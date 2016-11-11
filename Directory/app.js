@@ -13,7 +13,7 @@ app.factory('personFactory', ['$http', function ($http) {
 
     person.load = function (page, search) {
         var url = urlBase + '/?page=' + page;
-        if (search != "" && !angular.isUndefined(search)) {
+        if (search !== "" && !angular.isUndefined(search)) {
             url = url + '&search=' + search;
         }
         return $http.get(url);
