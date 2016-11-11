@@ -1,0 +1,47 @@
+﻿<md-dialog aria-label="Photo Dialog" ng-submit="answer(person, croppedDataUrl)">
+    <form name="photoForm" ng-cloak>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Edit Photo</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon md-font-library="material-icons" class="md-light">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-button id="selectPictureButton" class="md-accent md-raised md-hue-1" ngf-select ng-model="pictureFile" aria-label="Select Photo" accept="image/*">
+            Select Picture
+        </md-button>
+        <div layout-gt-sm="row" layout-padding>
+            <div layout="column" layout-align="center center">
+                <div ngf-drop ng-model="pictureFile" ngf-pattern="image/*"
+                     class="cropArea">
+                    <img-crop image="pictureFile | ngfDataUrl"
+                              result-image-format="image/jpeg"
+                              result-image="croppedDataUrl" ng-init="croppedDataUrl=''">
+                    </img-crop>
+                </div>
+                <div layout="row" layout-align="center center">
+                    Move the circle to select the area of the picture.
+                    </br>
+                    Use the arrows to resize the selection.
+                </div>
+            </div>
+            <div>
+                <div layout="row" layout-align="center center">
+                    Final image:
+                </div>
+                <md-whiteframe class="md-whiteframe-2dp" layout layout-align="center center">
+                    <img ng-src="{{croppedDataUrl}}" />
+                </md-whiteframe>
+            </div>
+        </div>
+        <md-dialog-actions layout="row">
+            <md-button type="submit" id="savePhoto" class="md-primary md-raised md-button" aria-label="Save">
+                Save
+            </md-button>
+            <span flex="10"></span>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

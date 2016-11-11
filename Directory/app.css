@@ -88,3 +88,9 @@ md-dialog.fullscreen-dialog {
     margin-bottom: 0px;
 }
 
+.cropArea {
+    background: #E4E4E4;
+    overflow: hidden;
+    width:500px;
+    height:350px;
+}

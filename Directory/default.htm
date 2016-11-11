@@ -26,6 +26,8 @@
 
     <!-- file upload -->
     <script type="text/javascript" src="/scripts/ng-file-upload/ng-file-upload.min.js"></script>
+    <script type="text/javascript" src="/scripts/ng-img-crop.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/scripts/ng-img-crop.css">
 
     <!-- Application script -->
     <script src="/app.js"></script>
@@ -35,9 +37,6 @@
 <body ng-app="app" layout="column">
     <md-toolbar class="md-hue-2" md-scroll-shrink>
         <div class="md-toolbar-tools">
-            <md-button class="md-icon-button" aria-label="Menu" ng-disabled="$mdMedia('gt-md')" ng-click="toggleSideNav()" hide-gt-md>
-                <md-icon md-font-library="material-icons">menu</md-icon>
-            </md-button>
             <h2>
                 <span ng-click="loadNews($event, null)" hide show-gt-xs>Directory Search</span>
             </h2>
@@ -63,6 +62,9 @@
 
         </div>
     </md-toolbar>
+
+
+
 
     <section layout="row" flex>
         <md-button class="md-fab md-fab-bottom-right md-primary" aria-label="add" ng-click="showAdd($event)">
@@ -100,21 +102,21 @@
                             <md-card-actions layout="row" layout-align="center center">
                                 <md-button class="md-icon-button" ng-click="showUpdate($event, $scope, person)" aria-label="edit">
                                     <md-icon md-font-library="material-icons" class="md-24">mode_edit</md-icon>
-                                    <md-tooltip md-direction="top">
+                                    <md-tooltip md-autohide md-direction="top">
                                         Edit Person
                                     </md-tooltip>
                                 </md-button>
 
-                                <md-button class="md-icon-button" ngf-fix-orientation="true" ngf-select="uploadFile($event, $scope, person, $file)" aria-label="edit">
+                                <md-button class="md-icon-button" ng-click="showPhotoDialog($event, $scope, person)" aria-label="edit">
                                     <md-icon md-font-library="material-icons" class="md-24">insert_photo</md-icon>
-                                    <md-tooltip md-direction="top">
+                                    <md-tooltip md-autohide md-direction="top">
                                         Upload image
                                     </md-tooltip>
                                 </md-button>
 
                                 <md-button class="md-icon-button" ng-click="deletePersonConfirm($event, person.Id)" aria-label="delete">
                                     <md-icon md-font-library="material-icons" class="md-24">delete</md-icon>
-                                    <md-tooltip md-direction="top">
+                                    <md-tooltip md-autohide md-direction="top">
                                         Delete Person
                                     </md-tooltip>
                                 </md-button>
@@ -129,7 +131,8 @@
                     </md-card>
                 </div>
             </div>
-            <div class="progress container" ng-show="isLoading && people.Length > 0">
+
+            <div class="progress container" ng-show="isLoading && people.length > 0">
                 <md-progress-linear md-mode="query"></md-progress-linear>
                 <div class="bottom-block">
                     <span>Loading . . . please wait</span>

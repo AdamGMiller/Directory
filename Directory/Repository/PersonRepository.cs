@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace Directory.Repository
 {
@@ -15,6 +16,14 @@ namespace Directory.Repository
 
         public IEnumerable<Person> GetAll(int page, int pageSize, string search)
         {
+            // FOR DEMO PURPOSES ONLY!
+            Random r = new Random();
+            int random = r.Next(0, 10);
+            if (random < 4)
+            {
+                Thread.Sleep(1000);
+            }
+
             // pull all active people
             IQueryable<Person> people = db.People
                 .Where(q => q.ActiveFlag == true);
@@ -101,6 +110,7 @@ namespace Directory.Repository
             currentPerson.LastName = person.LastName;
             currentPerson.Dob = person.Dob;
             currentPerson.Interests = person.Interests;
+            currentPerson.Photo = person.Photo;
 
             db.SaveChanges();
         }

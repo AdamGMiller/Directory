@@ -1,45 +1,54 @@
-﻿<md-dialog aria-label="Person Dialog {{person.Id}}">
+﻿<md-dialog aria-label="Person Dialog">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Edit Person</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <md-icon md-font-library="material-icons" class="md-light">close</md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+
     <form name="personForm" ng-cloak novalidate ng-submit="answer(person)">
-        <md-toolbar>
-            <div class="md-toolbar-tools">
-                <h2>Edit Person</h2>
-                <span flex></span>
-                <md-button class="md-icon-button" ng-click="cancel()">
-                    <md-icon md-font-library="material-icons" class="md-light">close</md-icon>
-                </md-button>
-            </div>
-        </md-toolbar>
 
         <md-dialog-content layout="column">
             <div layout-gt-sm="row" layout-padding>
-                <md-input-container>
-                    <label>First Name:</label>
-                    <input required id="firstName" aria-label="FirstName" ng-model="person.FirstName" size="25" maxlength="100">
+
+                <md-input-container class="md-block">
+                    <label>First Name</label>
+                    <input md-maxlength="100" required md-no-asterisk name="firstName" ng-model="person.FirstName">
                     <div ng-messages="personForm.firstName.$error">
                         <div ng-message="required">This is required.</div>
+                        <div ng-message="md-maxlength">The first name is too long.</div>
                     </div>
                 </md-input-container>
-                <md-input-container>
-                    <label>Last Name:</label>
-                    <input required aria-label="LastName" ng-model="person.LastName" size="25" maxlength="100">
-                    <div ng-messages="personForm.firstName.$error">
+                <md-input-container class="md-block">
+                    <label>Last Name</label>
+                    <input md-maxlength="100" required md-no-asterisk name="lastName" ng-model="person.LastName">
+                    <div ng-messages="personForm.lastName.$error">
                         <div ng-message="required">This is required.</div>
+                        <div ng-message="md-maxlength">The last name is too long.</div>
                     </div>
                 </md-input-container>
             </div>
             <div layout-gt-sm="row" layout-padding>
-                <md-datepicker required ng-model="dob" id="dateOfBirth"
-                               ng-change="person.Dob = dob.toISOString()"
-                               md-placeholder="Date of birth"></md-datepicker>
-                <div ng-messages="personForm.dateOfBirth.$error">
-                    <div ng-message="valid">The entered value is not a date!</div>
-                    <div ng-message="required">This date is required!</div>
-                </div>
+                <md-input-container class="md-block">
+                    <md-datepicker required ng-model="dob" name="dateOfBirth"
+                                   ng-change="person.Dob = dob.toISOString()"
+                                   md-placeholder="Date of birth"></md-datepicker>
+                    <div ng-messages="personForm.dateOfBirth.$error">
+                        <div ng-message="valid">Not a valid date.</div>
+                        <div ng-message="required">This is required.</div>
+                    </div>
+                </md-input-container>
             </div>
             <div layout-padding>
                 <md-input-container class="md-block">
                     <label>Interests</label>
-                    <textarea ng-model="person.Interests" md-maxlength="150" rows="5"></textarea>
+                    <textarea ng-model="person.Interests" name="interests" md-maxlength="150" rows="3"></textarea>
+                    <div ng-messages="personForm.interests.$error">
+                        <div ng-message="md-maxlength">The interests are too long.</div>
+                    </div>
                 </md-input-container>
             </div>
         </md-dialog-content>

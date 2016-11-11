@@ -11,6 +11,7 @@ using Moq;
 using Directory.Repository;
 using System.Web.Http.Results;
 using System.Web.Http.Hosting;
+using System.Net;
 
 namespace Directory.Tests.Controllers
 {
@@ -145,6 +146,55 @@ namespace Directory.Tests.Controllers
             var response = actionResult as OkNegotiatedContentResult<IEnumerable<Person>>;
             Assert.IsNotNull(response);
             Assert.AreEqual(10, response.Content.Count());
+        }
+
+        [TestMethod]
+        public void DeleteReturnsOk()
+        {
+            // Arrange
+            var mockRepository = new Mock<IPersonRepository>();
+            var controller = new PersonController(mockRepository.Object);
+
+            // Act
+            IHttpActionResult actionResult = controller.Delete(10);
+
+            // Assert
+            Assert.IsInstanceOfType(actionResult, typeof(OkResult));
+        }
+
+        [TestMethod]
+        public void PostMethodSetsLocationHeader()
+        {
+            // Arrange
+            var mockRepository = new Mock<IPersonRepository>();
+            var controller = new PersonController(mockRepository.Object);
+
+            // Act
+            IHttpActionResult actionResult = controller.Post(people.First());
+            var createdResult = actionResult as CreatedAtRouteNegotiatedContentResult<Person>;
+
+            // Assert
+            Assert.IsNotNull(createdResult);
+            Assert.AreEqual("DefaultApi", createdResult.RouteName);
+            Assert.AreEqual(1, createdResult.RouteValues["id"]);
+        }
+
+        [TestMethod]
+        public void PutReturnsContentResult()
+        {
+            // Arrange
+            var mockRepository = new Mock<IPersonRepository>();
+            var controller = new PersonController(mockRepository.Object);
+
+            // Act
+            IHttpActionResult actionResult = controller.Put(12, new Person() { Id = 12, FirstName = "Jack", LastName = "Flash", Interests = "Test.", Dob = DateTime.Parse("1/07/1970"), ActiveFlag = true });
+            var contentResult = actionResult as NegotiatedContentResult<Person>;
+
+            // Assert
+            Assert.IsNotNull(contentResult);
+            Assert.AreEqual(HttpStatusCode.Accepted, contentResult.StatusCode);
+            Assert.IsNotNull(contentResult.Content);
+            Assert.AreEqual(12, contentResult.Content.Id);
         }
     }
 }

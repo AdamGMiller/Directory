@@ -1,4 +1,4 @@
-var app = angular.module('app', ['ngMaterial', 'ngMessages', 'ngRoute', 'ngFileUpload']);
+var app = angular.module('app', ['ngMaterial', 'ngMessages', 'ngRoute', 'ngFileUpload', 'ngImgCrop']);
 
 /* Process REST requests */
 app.factory('personFactory', ['$http', function ($http) {
@@ -13,7 +13,7 @@ app.factory('personFactory', ['$http', function ($http) {
 
     person.load = function (page, search) {
         var url = urlBase + '/?page=' + page;
-        if (search != null && !angular.isUndefined(search)) {
+        if (search != "" && !angular.isUndefined(search)) {
             url = url + '&search=' + search;
         }
         return $http.get(url);
@@ -90,7 +90,6 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
             console.log('Getting people');
             personFactory.load($scope.page, $scope.search)
                 .then(function (response) {
-                    console.log('Getting people - response');
                     if ($scope.page > 1) {
                         $scope.people = $scope.people.concat(response.data);
                     } else {
@@ -99,6 +98,7 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
                     $scope.isLoading = false;
                 }, function (error) {
                     console.log('Unable to load person data: ' + error.message);
+                    $scope.isLoading = false;
                 });
         }
 
@@ -125,6 +125,7 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
             // set the active flag
             person.ActiveFlag = true;
             person.Age = $scope.calcuateAge(person.Dob);
+            // set a blank photo
             person.Photo = "R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
 
             personFactory.insert(person)
@@ -165,21 +166,6 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
             });
         };
 
-        $scope.uploadFile = function (event, scope, person, file) {
-            Upload.upload({
-                url: '/api/files/' + person.Id,
-                data: { file: file, 'Id': person.Id }
-            }).then(function (resp) {
-                console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
-                posting.Body = resp.data.Body;
-            }, function (resp) {
-                console.log('Error status: ' + resp.status);
-            }, function (evt) {
-                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
-            });
-        };
-
         $scope.calcuateAge = function (dob) {
             // calculate age for display purposes
             var d = new Date();
@@ -189,7 +175,6 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
             var result = Math.round(a * 100) / 100;
             return Math.floor(result);
         };
-
 
         /* Get people by default - check url after route data is loaded */
         $scope.$on('$routeChangeSuccess', function ($routeParams) {
@@ -234,7 +219,6 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
                 $scope.customFullscreen = (wantsFullScreen === true);
             });
         };
-
 
         $scope.showUpdate = function (ev, scope, person) {
             var useFullScreen = ($mdMedia('sm') || $mdMedia('xs')) && $scope.customFullscreen;
@@ -295,6 +279,54 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
                 console.log('Delete canceled.');
             });
         };
+
+
+        $scope.showPhotoDialog = function (ev, scope, person) {
+            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs')) && $scope.customFullscreen;
+            var croppedDataUrl = "";
+            $scope.person = person;
+
+            $mdDialog.show({
+                controller: PhotoDialogController,
+                templateUrl: '/pages/PhotoDialog.tmpl.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                // pass person data
+                locals: { person: person, croppedDataUrl: croppedDataUrl },
+                clickOutsideToClose: false,
+                fullscreen: useFullScreen
+            })
+            .then(function (person, croppedDataUrl) {
+                console.log('Upating person');
+                $scope.updatePerson(person);
+            }, function () {
+                console.log('Dialog cancelled.');
+            });
+            // resize dialog box on the fly
+            $scope.$watch(function () {
+                return $mdMedia('xs') || $mdMedia('sm');
+            }, function (wantsFullScreen) {
+                $scope.customFullscreen = (wantsFullScreen === true);
+            });
+        };
+
+        function PhotoDialogController($scope, $mdDialog, person, croppedDataUrl) {
+            $scope.person = person;
+
+            $scope.hide = function () {
+                $mdDialog.hide();
+            };
+            $scope.cancel = function () {
+                $mdDialog.cancel();
+            };
+            $scope.answer = function (person, croppedDataUrl) {
+                // set the binary photo data from the cropped image
+                var photo = croppedDataUrl;
+                photo = photo.substring(photo.indexOf(";base64,") + 8);
+                person.Photo = photo;
+                $mdDialog.hide(person, croppedDataUrl);
+            };
+        }
 
         // display dialogs in full screen for small displays
         $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
