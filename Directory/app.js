@@ -199,6 +199,7 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
                 Interests: "",
                 Age: 0
             };
+            var modelOptions = {};
 
             $mdDialog.show({
                 controller: PersonDialogController,
@@ -206,7 +207,7 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
                 parent: angular.element(document.body),
                 targetEvent: ev,
                 // pass person data
-                locals: { person: $scope.person },
+                locals: { person: $scope.person, modelOptions: modelOptions },
                 clickOutsideToClose: false,
                 fullscreen: useFullScreen
             })
@@ -226,14 +227,14 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
 
         $scope.showUpdate = function (ev, scope, person) {
             var useFullScreen = ($mdMedia('sm') || $mdMedia('xs')) && $scope.customFullscreen;
-
+            var modelOptions = { updateOn: 'submit' };
             $mdDialog.show({
                 controller: PersonDialogController,
                 templateUrl: '/pages/PersonDialog.tmpl.html',
                 parent: angular.element(document.body),
                 targetEvent: ev,
                 // pass person data
-                locals: { person: person },
+                locals: { person: person, modelOptions: modelOptions },
                 clickOutsideToClose: false,
                 fullscreen: useFullScreen
             })
@@ -250,8 +251,12 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
             });
         };
 
-        function PersonDialogController($scope, $mdDialog, person) {
+        function PersonDialogController($scope, $mdDialog, person, modelOptions) {
             $scope.person = person;
+            // the modelOptions variable is necessary to prevent model updates for the edit version of the dialog
+            // if someone cancels out
+            $scope.modelOptions = modelOptions;
+
             // create the dob variable in order to convert an ISO date to a true date
             if (person.Dob) {
                 $scope.dob = new Date(person.Dob);
