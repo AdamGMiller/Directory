@@ -25,7 +25,7 @@ namespace Directory.Controllers
         {
             if(repo.Exists(id) == false)
             {
-                return NotFound();
+                return Content(HttpStatusCode.NotFound, "Person " + id.ToString() + " not found.");
             }
 
             Person person = repo.Get(id);
@@ -37,7 +37,6 @@ namespace Directory.Controllers
         [HttpPost]
         public IHttpActionResult Post(Person person)
         {
-
             repo.Add(person);
             return CreatedAtRoute("DefaultApi", new { id = person.Id }, person);
         }
@@ -46,6 +45,11 @@ namespace Directory.Controllers
         [HttpDelete]
         public IHttpActionResult Delete(int id)
         {
+            if (repo.Exists(id) == false)
+            {
+                return Content(HttpStatusCode.NotFound, "Person " + id.ToString() + " not found.");
+            }
+
             repo.Delete(id);
             return Ok();
         }
@@ -54,6 +58,11 @@ namespace Directory.Controllers
         [HttpPut]
         public IHttpActionResult Put(int id, Person person)
         {
+            if (repo.Exists(id) == false)
+            {
+                return Content(HttpStatusCode.NotFound, "Person " + id.ToString() + " not found.");
+            }
+
             repo.Update(id, person);
 
             return Content(HttpStatusCode.Accepted, person);

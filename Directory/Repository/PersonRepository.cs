@@ -70,6 +70,7 @@ namespace Directory.Repository
 
             return people;
         }
+
         public Person Get(int id)
         {
             if (Exists(id) == false)
@@ -79,6 +80,7 @@ namespace Directory.Repository
 
             return db.People.Single(p => p.Id == id);
         }
+
         public void Add(Person person)
         {
             if (person == null)
@@ -89,6 +91,7 @@ namespace Directory.Repository
             db.People.Add(person);
             db.SaveChanges();
         }
+
         public void Update(int id, Person person)
         {
             if (person == null)

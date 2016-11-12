@@ -16,7 +16,7 @@ using System.Net;
 namespace Directory.Tests.Controllers
 {
     [TestClass]
-    public class PersonControllerTest
+    public class PersonRepositoryTest
     {
         private IList<Person> people;
 
@@ -41,132 +41,59 @@ namespace Directory.Tests.Controllers
                     new Person() { Id = 13, FirstName = "Carl", LastName = "Graham", Interests = "Disrupter, Geek, Fire Spinner, Chihuahua Lover, Mayonaise Tester. My life is the first half of a Spider Man movie.", Dob = DateTime.Parse("12/07/1970"), ActiveFlag = true }
                 };
         }
-        
+
         [TestMethod]
-        public void GetInvalidItemFromControllerReturnsNotFound()
+        public void GetValidRepositoryEntryReturnsPerson()
+        {
+            //Arrange
+            var mockRepository = new Mock<IPersonRepository>();
+            mockRepository.Setup(x => x.Get(It.IsAny<int>())).Returns((int i) => people.Where(x => x.Id == i).Single());
+            var repository = mockRepository.Object;
+
+            //Act
+            var singlePerson = repository.Get(2);
+
+            //Assert
+            Assert.IsNotNull(singlePerson); // Test if null
+            Assert.IsInstanceOfType(singlePerson, typeof(Person)); // Test type
+            Assert.AreEqual("Alan", singlePerson.FirstName); // Verify the name matches
+        }
+
+        [TestMethod]
+        public void GetAllByNameReturnsValidResults()
+        {
+            //Arrange
+            var mockRepository = new Mock<IPersonRepository>();
+            mockRepository.Setup(x => x.GetAll(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
+                .Returns(people.Where(q => q.FirstName.Contains("Brandon")));
+            var repository = mockRepository.Object;
+
+            //Act
+            var multiplePeople = repository.GetAll(1, 10, "Brandon");
+
+            //Assert
+            Assert.IsNotNull(multiplePeople); // Test if null
+            Assert.AreEqual(2, multiplePeople.Count()); // check count
+        }
+
+        [TestMethod]
+        public void GetValidItemFromControllerReturnsPerson()
         {
             // Arrange
             var mockRepository = new Mock<IPersonRepository>();
+            mockRepository.Setup(x => x.Get(2))
+                .Returns(people.Single(q => q.Id == 2));
             mockRepository.Setup(x => x.Exists(2))
-                .Returns(false);
+                .Returns(true);
             var controller = new PersonController(mockRepository.Object);
 
             // Act
             var actionResult = controller.Get(2);
-            var negativeResult = actionResult as NegotiatedContentResult<string>;
 
             // Assert
-            Assert.IsNotNull(negativeResult);
-            Assert.AreEqual("Person 2 not found.", negativeResult.Content);
-            Assert.AreEqual(HttpStatusCode.NotFound, negativeResult.StatusCode);
-        }
-
-        [TestMethod]
-        public void DeleteInvalidItemFromControllerReturnsNotFound()
-        {
-            // Arrange
-            var mockRepository = new Mock<IPersonRepository>();
-            mockRepository.Setup(x => x.Exists(2))
-                .Returns(false);
-            var controller = new PersonController(mockRepository.Object);
-
-            // Act
-            var actionResult = controller.Delete(2);
-            var negativeResult = actionResult as NegotiatedContentResult<string>;
-
-            // Assert
-            Assert.IsNotNull(negativeResult);
-            Assert.AreEqual("Person 2 not found.", negativeResult.Content);
-            Assert.AreEqual(HttpStatusCode.NotFound, negativeResult.StatusCode);
-        }
-
-        [TestMethod]
-        public void GetActiveItemsFromControllerReturnsPeople()
-        {
-            // Arrange
-            var mockRepository = new Mock<IPersonRepository>();
-            mockRepository.Setup(x => x.GetAll(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
-                .Returns(people.Where(q => q.ActiveFlag == true));
-            var controller = new PersonController(mockRepository.Object);
-
-            // Act
-            var actionResult = controller.GetAll(1, 20, "");
-
-            // Assert
-            var response = actionResult as OkNegotiatedContentResult<IEnumerable<Person>>;
+            var response = actionResult as OkNegotiatedContentResult<Person>;
             Assert.IsNotNull(response);
-            Assert.AreEqual(12, response.Content.Count());
-        }
-
-        [TestMethod]
-        public void GetSinglePageFromControllerReturnsPartialResults()
-        {
-            // Arrange
-            var mockRepository = new Mock<IPersonRepository>();
-            mockRepository.Setup(x => x.GetAll(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
-                .Returns(people.Where(q => q.ActiveFlag == true).OrderBy(q => q.FirstName).Take(10));
-            var controller = new PersonController(mockRepository.Object);
-
-            // Act
-            var actionResult = controller.GetAll(1, 10, "");
-
-            // Assert
-            var response = actionResult as OkNegotiatedContentResult<IEnumerable<Person>>;
-            Assert.IsNotNull(response);
-            Assert.AreEqual(10, response.Content.Count());
-        }
-
-        [TestMethod]
-        public void DeleteReturnsOk()
-        {
-            // Arrange
-            var mockRepository = new Mock<IPersonRepository>();
-            var controller = new PersonController(mockRepository.Object);
-            mockRepository.Setup(x => x.Exists( It.IsAny<int>()))
-                .Returns(true);
-
-            // Act
-            IHttpActionResult actionResult = controller.Delete(10);
-
-            // Assert
-            Assert.IsInstanceOfType(actionResult, typeof(OkResult));
-        }
-
-        [TestMethod]
-        public void PostMethodSetsLocationHeader()
-        {
-            // Arrange
-            var mockRepository = new Mock<IPersonRepository>();
-            var controller = new PersonController(mockRepository.Object);
-
-            // Act
-            IHttpActionResult actionResult = controller.Post(people.First());
-            var createdResult = actionResult as CreatedAtRouteNegotiatedContentResult<Person>;
-
-            // Assert
-            Assert.IsNotNull(createdResult);
-            Assert.AreEqual("DefaultApi", createdResult.RouteName);
-            Assert.AreEqual(1, createdResult.RouteValues["id"]);
-        }
-
-        [TestMethod]
-        public void PutReturnsContentResult()
-        {
-            // Arrange
-            var mockRepository = new Mock<IPersonRepository>();
-            var controller = new PersonController(mockRepository.Object);
-            mockRepository.Setup(x => x.Exists(It.IsAny<int>()))
-                .Returns(true);
-
-            // Act
-            IHttpActionResult actionResult = controller.Put(12, new Person() { Id = 12, FirstName = "Jack", LastName = "Flash", Interests = "Test.", Dob = DateTime.Parse("1/07/1970"), ActiveFlag = true });
-            var contentResult = actionResult as NegotiatedContentResult<Person>;
-
-            // Assert
-            Assert.IsNotNull(contentResult);
-            Assert.AreEqual(HttpStatusCode.Accepted, contentResult.StatusCode);
-            Assert.IsNotNull(contentResult.Content);
-            Assert.AreEqual(12, contentResult.Content.Id);
+            Assert.AreEqual(2, response.Content.Id);
         }
     }
 }

@@ -22,6 +22,9 @@ namespace Directory
             // validate models using custom filter
             config.Filters.Add(new ValidateModelAttribute());
 
+            // add global exception handling
+            config.Filters.Add(new Directory.Filters.CustomExceptionFilter());
+
             // Web API routes
             config.MapHttpAttributeRoutes();
 
