@@ -100,7 +100,7 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
                     $scope.peopleFound = response.data.length;
                     console.log("Found " + $scope.peopleFound + " people")
                 }, function (error) {
-                    console.log('Unable to load person data: ' + error.message);
+                    $scope.errorMessage('Unable to load person data. ' + error.data);
                     $scope.isLoading = false;
                 });
         }
@@ -110,7 +110,7 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
                 .then(function (response) {
                     return response.data;
                 }, function (error) {
-                    console.log('Unable to load single person: ' + error.message);
+                    $scope.errorMessage('Unable to load single person. ' + error.data);
                 });
         }
 
@@ -139,7 +139,7 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
                     console.log('Inserted person, refreshing');
                     $scope.people.splice(0, 0, person);
                 }, function (error) {
-                    console.log('Unable to insert person: ' + error.message);
+                    $scope.errorMessage('Unable to insert person. ' + error.data);
                 });
         };
 
@@ -150,7 +150,7 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
                 .then(function (response) {
                     console.log('Updated person, refreshing');
                 }, function (error) {
-                    console.log('Unable to update person: ' + error.message);
+                    $scope.errorMessage('Unable to update person. ' + error.data);
                 });
         };
 
@@ -166,7 +166,7 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
                     }
                 }
             }, function (error) {
-                console.log('Unable to delete person: ' + error.message);
+                $scope.errorMessage('Unable to delete person. ' + error.data);
             });
         };
 
@@ -199,7 +199,6 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
                 Interests: "",
                 Age: 0
             };
-            var modelOptions = {};
 
             $mdDialog.show({
                 controller: PersonDialogController,
@@ -207,7 +206,7 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
                 parent: angular.element(document.body),
                 targetEvent: ev,
                 // pass person data
-                locals: { person: $scope.person, modelOptions: modelOptions },
+                locals: { person: $scope.person},
                 clickOutsideToClose: false,
                 fullscreen: useFullScreen
             })
@@ -227,14 +226,13 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
 
         $scope.showUpdate = function (ev, scope, person) {
             var useFullScreen = ($mdMedia('sm') || $mdMedia('xs')) && $scope.customFullscreen;
-            var modelOptions = { updateOn: 'submit' };
             $mdDialog.show({
                 controller: PersonDialogController,
                 templateUrl: '/pages/PersonDialog.tmpl.html',
                 parent: angular.element(document.body),
                 targetEvent: ev,
                 // pass person data
-                locals: { person: person, modelOptions: modelOptions },
+                locals: { person: person},
                 clickOutsideToClose: false,
                 fullscreen: useFullScreen
             })
@@ -242,6 +240,8 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
                 $scope.updatePerson(person);
             }, function () {
                 console.log('Dialog cancelled.');
+                // refresh page to revert display
+                $scope.searchPeople();
             });
             // resize dialog box on the fly
             $scope.$watch(function () {
@@ -251,11 +251,8 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
             });
         };
 
-        function PersonDialogController($scope, $mdDialog, person, modelOptions) {
+        function PersonDialogController($scope, $mdDialog, person) {
             $scope.person = person;
-            // the modelOptions variable is necessary to prevent model updates for the edit version of the dialog
-            // if someone cancels out
-            $scope.modelOptions = modelOptions;
 
             // create the dob variable in order to convert an ISO date to a true date
             if (person.Dob) {
@@ -336,6 +333,21 @@ app.controller('mainController', ['$scope', '$http', '$timeout', '$mdDialog', '$
                 $mdDialog.hide(person, croppedDataUrl);
             };
         }
+
+        // Error dialog
+        $scope.errorMessage = function (errorMessage) {
+            var confirm = $mdDialog.confirm()
+                  .title('A Serious Error Has Occurred')
+                  .textContent(errorMessage)
+                  .ariaLabel('Error')
+                  .ok('Refresh Page')
+                  .cancel('Cancel');
+            $mdDialog.show(confirm).then(function () {
+                $scope.searchPeople();
+            }, function () {
+                console.log('Error canceled.');
+            });
+        };
 
         // display dialogs in full screen for small displays
         $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
