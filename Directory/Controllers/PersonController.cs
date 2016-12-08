@@ -58,6 +58,11 @@ namespace Directory.Controllers
         [HttpPut]
         public IHttpActionResult Put(int id, Person person)
         {
+            if(!ModelState.IsValid)
+            {
+                return Content(HttpStatusCode.BadRequest, "Person model is invalid.");
+            }
+
             if (repo.Exists(id) == false)
             {
                 return Content(HttpStatusCode.NotFound, "Person " + id.ToString() + " not found.");

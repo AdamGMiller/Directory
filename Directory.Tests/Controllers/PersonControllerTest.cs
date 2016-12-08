@@ -168,6 +168,26 @@ namespace Directory.Tests.Controllers
             Assert.IsNotNull(contentResult.Content);
             Assert.AreEqual(12, contentResult.Content.Id);
         }
+
+        [TestMethod]
+        public void PutWithInvalidModelReturnsError()
+        {
+            // Arrange
+            var mockRepository = new Mock<IPersonRepository>();
+            var controller = new PersonController(mockRepository.Object);
+            controller.ModelState.AddModelError("error", "error");
+            mockRepository.Setup(x => x.Exists(It.IsAny<int>()))
+                .Returns(true);
+
+            // Act
+            IHttpActionResult actionResult = controller.Put(10, new Person());
+            var negativeResult = actionResult as NegotiatedContentResult<string>;
+
+            // Assert
+            Assert.IsNotNull(negativeResult);
+            Assert.AreEqual("Person model is invalid.", negativeResult.Content);
+            Assert.AreEqual(HttpStatusCode.BadRequest, negativeResult.StatusCode);
+        }
     }
 }
 
