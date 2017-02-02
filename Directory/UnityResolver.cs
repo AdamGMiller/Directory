@@ -1,16 +1,20 @@
-﻿using Microsoft.Practices.Unity;
+﻿// <copyright file="UnityResolver.cs" company="Adam Miller">
+// Copyright (c) Adam Miller. All rights reserved.
+// </copyright>
+
 using System;
 using System.Collections.Generic;
 using System.Web.Http.Dependencies;
+using Microsoft.Practices.Unity;
 
-
-// Dependency injection resolver source:
-// https://www.asp.net/web-api/overview/advanced/dependency-injection
-
+/// <summary>
+/// Dependency injection resolver source:
+/// https://www.asp.net/web-api/overview/advanced/dependency-injection
+/// </summary>
 
 public class UnityResolver : IDependencyResolver
 {
-    protected IUnityContainer container;
+    private IUnityContainer container;
 
     public UnityResolver(IUnityContainer container)
     {
@@ -18,6 +22,7 @@ public class UnityResolver : IDependencyResolver
         {
             throw new ArgumentNullException("container");
         }
+
         this.container = container;
     }
 
@@ -25,7 +30,7 @@ public class UnityResolver : IDependencyResolver
     {
         try
         {
-            return container.Resolve(serviceType);
+            return this.container.Resolve(serviceType);
         }
         catch (ResolutionFailedException)
         {
@@ -37,7 +42,7 @@ public class UnityResolver : IDependencyResolver
     {
         try
         {
-            return container.ResolveAll(serviceType);
+            return this.container.ResolveAll(serviceType);
         }
         catch (ResolutionFailedException)
         {
@@ -47,12 +52,12 @@ public class UnityResolver : IDependencyResolver
 
     public IDependencyScope BeginScope()
     {
-        var child = container.CreateChildContainer();
+        var child = this.container.CreateChildContainer();
         return new UnityResolver(child);
     }
 
     public void Dispose()
     {
-        container.Dispose();
+        this.container.Dispose();
     }
 }

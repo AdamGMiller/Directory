@@ -1,3 +1,7 @@
+// <copyright file="UnityWebApiActivator.cs" company="Adam Miller">
+// Copyright (c) Adam Miller. All rights reserved.
+// </copyright>
+
 using System.Web.Http;
 using Microsoft.Practices.Unity.WebApi;
 
@@ -10,7 +14,7 @@ namespace Directory.App_Start
     public static class UnityWebApiActivator
     {
         /// <summary>Integrates Unity when the application starts.</summary>
-        public static void Start() 
+        public static void Start()
         {
             // Use UnityHierarchicalDependencyResolver if you want to use a new child container for each IHttpController resolution.
             // var resolver = new UnityHierarchicalDependencyResolver(UnityConfig.GetConfiguredContainer());

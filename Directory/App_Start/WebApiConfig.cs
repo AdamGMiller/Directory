@@ -1,13 +1,17 @@
-﻿using Directory.Filters;
-using Directory.Repository;
-using Microsoft.Practices.Unity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
+﻿// <copyright file="WebApiConfig.cs" company="Adam Miller">
+// Copyright (c) Adam Miller. All rights reserved.
+// </copyright>
 
 namespace Directory
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Web.Http;
+    using Directory.Filters;
+    using Directory.Repository;
+    using Microsoft.Practices.Unity;
+
     public static class WebApiConfig
     {
         public static void Register(HttpConfiguration config)
@@ -28,11 +32,14 @@ namespace Directory
             // Web API routes
             config.MapHttpAttributeRoutes();
 
+            // enable CORS
+            var cors = new System.Web.Http.Cors.EnableCorsAttribute("*", "*", "*");
+            config.EnableCors(cors);
+
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
+                defaults: new { id = RouteParameter.Optional });
         }
     }
 }

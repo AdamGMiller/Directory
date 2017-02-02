@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http.Controllers;
-using System.Web.Http.Filters;
-using System.Web.Http.ModelBinding;
+﻿// <copyright file="ValidationActionFilter.cs" company="Adam Miller">
+// Copyright (c) Adam Miller. All rights reserved.
+// </copyright>
 
 namespace Directory.Filters
 {
+    using System.Net;
+    using System.Net.Http;
+    using System.Web.Http.Controllers;
+    using System.Web.Http.Filters;
+
     public class ValidateModelAttribute : ActionFilterAttribute
     {
         public override void OnActionExecuting(HttpActionContext actionContext)

@@ -1,16 +1,20 @@
+// <copyright file="Configuration.cs" company="Adam Miller">
+// Copyright (c) Adam Miller. All rights reserved.
+// </copyright>
+
 namespace Directory.Migrations
 {
-    using Repository;
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
+    using Repository;
 
     internal sealed class Configuration : DbMigrationsConfiguration<Directory.Context.DirectoryContext>
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = true;
+            this.AutomaticMigrationsEnabled = true;
         }
 
         protected override void Seed(Directory.Context.DirectoryContext context)
@@ -121,8 +125,7 @@ namespace Directory.Migrations
                 new Person() { FirstName = "Virginia", LastName = "Mendoza", Interests = "drive transparent metrics", Dob = DateTime.Parse("12/29/1963"), ActiveFlag = true },
                 new Person() { FirstName = "Walter", LastName = "Kelley", Interests = "strategize real-time infomediaries", Dob = DateTime.Parse("09/18/1964"), ActiveFlag = true },
                 new Person() { FirstName = "Wanda", LastName = "Davis", Interests = "syndicate unusual users", Dob = DateTime.Parse("01/12/1990"), ActiveFlag = true },
-                new Person() { FirstName = "Wanda", LastName = "Simpson", Interests = "synergize end-to-end interfaces", Dob = DateTime.Parse("05/13/1951"), ActiveFlag = true }
-            );
+                new Person() { FirstName = "Wanda", LastName = "Simpson", Interests = "synergize end-to-end interfaces", Dob = DateTime.Parse("05/13/1951"), ActiveFlag = true });
         }
     }
 }

@@ -1,8 +1,12 @@
-﻿using System.Web;
-using System.Web.Mvc;
+﻿// <copyright file="FilterConfig.cs" company="Adam Miller">
+// Copyright (c) Adam Miller. All rights reserved.
+// </copyright>
 
 namespace Directory
 {
+    using System.Web;
+    using System.Web.Mvc;
+
     public class FilterConfig
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
